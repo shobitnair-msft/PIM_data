@@ -4,7 +4,7 @@ const axios = require("axios")
 var cors = require('cors')
 const app = express();
 app.use(cors())
-
+app.use(express.json())
 
 
 const db  = new sqlite3.Database('./PIMDatabase.db' , sqlite3.OPEN_READWRITE , (err)=> {
@@ -69,7 +69,6 @@ app.get("/getPayment" , (req,res) => {
     })
 })
 
-
 app.get("/getPIMData" , async(req,res) => {
     let cred = await axios.get('http://localhost:8000/getCredential');
     let add = await axios.get('http://localhost:8000/getAddress');
@@ -77,10 +76,31 @@ app.get("/getPIMData" , async(req,res) => {
     return res.json([...(cred.data) , ...(add.data) , ...(pay.data)]);
 })
 
+app.get("/user" , async(req,res) => {
+    db.all(`select * from user where email='shobitnair10@gmail.com'` , (err,rows)=>{
+        if(err) return res.error(err);
+        return res.json(rows.map((x)=>{
+            return x;
+        }))
+    })
+})
 
+app.post("/user/in" , async(req,res) => {
+    const {meta} = req.body;
+    console.log(meta);
+    db.run(`insert into user (email , status , meta) values (?,?,?)` , [
+        "shobitnair10@gmail.com" , "IN" , JSON.stringify(meta)
+    ], (err) => {
+        return res.json({ok:"ok"})
+    }
+    );
+})
 
-
-
+app.post("/user/out" , async(req,res) => {
+    db.run('delete from user where email = ?' , ["shobitnair10@gmail.com"] , (err)=>{
+        return res.json({ok:"ok"})
+    })
+})
 
 app.listen(8000 , () => {
     console.log("Listening at port 8000")

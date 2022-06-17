@@ -1,0 +1,24 @@
+const data: NativeSuggestionUI.IAuthenticationResult =  await nativeBridgeWithFallback({
+            none: () => {
+                // shouldn't happen, but leaving as a guardrail
+                throw new Error(`Authentication is not supported for this native version`);
+            },
+            v6: async (bridge) => {
+                const result = await bridge.authenticateAsync(
+                    "https://login.microsoft.com",
+                    "common",
+                    "3956eae1-375b-4464-9990-765715837f8b",
+                    null, // Account ID. Not specified so that we get the local account.
+                    "user.read",
+                    JSON.stringify({
+                        authority: "https://login.windows.net",
+                        resource: "https://graph.microsoft.com",
+                        redirect_uri:"ms-appx-web://Microsoft.AAD.BrokerPlugin/S-1-15-2-2398581820-284606222-962531353-353163537-1775660448-114734861-1204604793"
+                    }),
+                    NativeSuggestionUI.AuthenticationRequestType.ForceUI,
+                    null, // Correlation ID.
+                );
+
+                return JSON.parse(result) as NativeSuggestionUI.IAuthenticationResult;
+            },
+        });
