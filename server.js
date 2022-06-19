@@ -77,7 +77,7 @@ app.get("/getPIMData" , async(req,res) => {
 })
 
 app.get("/user" , async(req,res) => {
-    db.all(`select * from user where email='shobitnair10@gmail.com'` , (err,rows)=>{
+    db.all(`select * from user` , (err,rows)=>{
         if(err) return res.error(err);
         return res.json(rows.map((x)=>{
             return x;
@@ -89,7 +89,7 @@ app.post("/user/in" , async(req,res) => {
     const {meta} = req.body;
     console.log(meta);
     db.run(`insert into user (email , status , meta) values (?,?,?)` , [
-        "shobitnair10@gmail.com" , "IN" , JSON.stringify(meta)
+        "xyz" , "IN" , JSON.stringify(meta)
     ], (err) => {
         return res.json({ok:"ok"})
     }
@@ -97,7 +97,7 @@ app.post("/user/in" , async(req,res) => {
 })
 
 app.post("/user/out" , async(req,res) => {
-    db.run('delete from user where email = ?' , ["shobitnair10@gmail.com"] , (err)=>{
+    db.run('delete from user where email = ?' , ["xyz"] , (err)=>{
         return res.json({ok:"ok"})
     })
 })
